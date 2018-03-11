@@ -1,33 +1,33 @@
 {
-	"name": "json-helper",
-	"displayName": "JSON Helper",
-	"description": "Give you appropriate descriptions for JSON keys",
-	"author": "zhoufeng",
-	"license": "MIT",
-	"version": "1.0.0",
-	"publisher": "zhoufeng",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/mine2chow/JSON-Helper.git"
-	},
-	"scripts": {
-		"postinstall": "cd server && npm install && cd ../client && npm install && cd ..",
-		"compile": "tsc -p client/tsconfig.json && cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
-		"compile:client": "tsc -p client/tsconfig.json",
-		"watch:client": "tsc -w -p client/tsconfig.json",
-		"compile:server": "cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
-		"watch:server": "cd server && npm run installServer && cd .. && tsc -w -p server/tsconfig.json"
-	},
-	"devDependencies": {
-		"@types/mocha": "^2.2.48",
-		"@types/node": "^6.0.101",
-		"typescript": "^2.7.2"
-	},
-	"engines": {
-		"vscode": "^0.10.0"
-	},
-	"categories": [
-		"Languages"
-	],
-	"homepage": "https://github.com/mine2chow/JSON-Helper/blob/master/README.md"
+    "name": "json-helper",
+    "displayName": "JSON Helper",
+    "description": "Give you appropriate descriptions for JSON keys",
+    "author": "zhoufeng",
+    "license": "MIT",
+    "version": "1.0.0",
+    "publisher": "zhoufeng",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mine2chow/JSON-Helper.git"
+    },
+    "scripts": {
+        "postinstall": "cd server && npm install && cd ../client && npm install && cd ..",
+        "compile": "tsc -p client/tsconfig.json && cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
+        "compile:client": "tsc -p client/tsconfig.json",
+        "watch:client": "tsc -w -p client/tsconfig.json",
+        "compile:server": "cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
+        "watch:server": "cd server && npm run installServer && cd .. && tsc -w -p server/tsconfig.json"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.48",
+        "@types/node": "^6.0.101",
+        "typescript": "^2.7.2"
+    },
+    "engines": {
+        "vscode": "^0.10.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "homepage": "https://github.com/mine2chow/JSON-Helper/blob/master/README.md"
 }

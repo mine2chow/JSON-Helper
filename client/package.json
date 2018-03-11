@@ -1,41 +1,41 @@
 {
-	"name": "json-helper",
-	"displayName": "JSON Helper",
-	"description": "Give you appropriate descriptions for JSON keys",
-	"license": "MIT",
-	"version": "1.0.0",
-	"publisher": "zhoufeng",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/mine2chow/JSON-Helper.git"
-	},
-	"engines": {
-		"vscode": "^0.10.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onLanguage:json"
-	],
-	"main": "./out/src/extension",
-	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "Example configuration",
-			"properties": {
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "tsc -p ./",
-		"compile": "tsc -p ./",
-		"watch": "tsc -w -p ./",
-		"update-vscode": "node ./node_modules/vscode/bin/install",
-		"postinstall": "node ./node_modules/vscode/bin/install"
-	},
-	"dependencies": {
-		"vscode": "^1.1.5",
-		"vscode-languageclient": "^3.5.0"
-	}
+    "name": "json-helper",
+    "displayName": "JSON Helper",
+    "description": "Give you appropriate descriptions for JSON keys",
+    "license": "MIT",
+    "version": "1.0.1",
+    "publisher": "zhoufeng",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mine2chow/JSON-Helper.git"
+    },
+    "engines": {
+        "vscode": "^0.10.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:json"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "Example configuration",
+            "properties": {}
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "",
+        "compile": "tsc -p ./",
+        "watch": "tsc -w -p ./",
+        "update-vscode": "node ./node_modules/vscode/bin/install",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "dependencies": {
+        "vscode": "^1.1.5",
+        "vscode-languageclient": "^3.5.0"
+    },
+    "homepage": "https://github.com/mine2chow/JSON-Helper/blob/master/README.md"
 }
