@@ -4,6 +4,6 @@ Privide a hover popup window to describe which layer for the key you are in now.
 
 [View the code](https://github.com/mine2chow/JSON-Helper)
 
-## Preview:
+## Preview
 
 ![avatar](./client/JSON-Helper.gif)
