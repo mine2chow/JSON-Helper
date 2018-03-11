@@ -101,7 +101,12 @@ function getKeyCursorIn(lines:string[], lineNumber:number, character:number):any
 
 function generateMessage(route:BracketInfo[]):string{
 	let message = ROOT_NAME;
-	for(var i=0; i<route.length; i++){
+	//JSON is a list
+	if(route[0].notation == '[' && route[0].keyName == ''){
+		message += '['+route[0].listIndex+']';
+	}
+
+	for(var i=1; i<route.length; i++){
 		let bInfo = route[i];
 		if(bInfo.notation == '{' && bInfo.keyName != ''){
 			message += '["' + bInfo.keyName + '"]';
@@ -192,7 +197,7 @@ connection.onHover((event):Hover =>{
 					break;
 			}
 
-			if(c != ' ' && c != ':'){
+			if(c != ' ' && c != ':' && c != '\r' && c != '\n' && c != '	'){
 				isAfterColon = false;
 			}
 		}
