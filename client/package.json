@@ -1,10 +1,10 @@
 {
 	"name": "json-helper",
 	"displayName": "JSON Helper",
-	"description": "Give you appropriate descriptions for JSON files",
+	"description": "Give you appropriate descriptions for JSON keys",
 	"license": "MIT",
-	"version": "0.0.1",
-	"publisher": "Feng Zhou",
+	"version": "1.0.0",
+	"publisher": "zhoufeng",
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:mine2chow/JSON-Helper.git"
@@ -24,23 +24,6 @@
 			"type": "object",
 			"title": "Example configuration",
 			"properties": {
-				"json_helper.maxNumberOfProblems": {
-					"scope": "resource",
-					"type": "number",
-					"default": 100,
-					"description": "Controls the maximum number of problems produced by the server."
-				},
-				"json_helper.trace.server": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "off",
-					"description": "Traces the communication between VSCode and the language server."
-				}
 			}
 		}
 	},
