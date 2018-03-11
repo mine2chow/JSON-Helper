@@ -8,7 +8,7 @@
 	"publisher": "zhoufeng",
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:mine2chow/JSON-Helper.git"
+		"url": "https://github.com/mine2chow/JSON-Helper.git"
 	},
 	"scripts": {
 		"postinstall": "cd server && npm install && cd ../client && npm install && cd ..",
@@ -22,5 +22,12 @@
 		"@types/mocha": "^2.2.48",
 		"@types/node": "^6.0.101",
 		"typescript": "^2.7.2"
-	}
+	},
+	"engines": {
+		"vscode": "^0.10.0"
+	},
+	"categories": [
+		"Languages"
+	],
+	"homepage": "https://github.com/mine2chow/JSON-Helper/blob/master/README.md"
 }

@@ -7,10 +7,10 @@
 	"publisher": "zhoufeng",
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:mine2chow/JSON-Helper.git"
+		"url": "https://github.com/mine2chow/JSON-Helper.git"
 	},
 	"engines": {
-		"vscode": "^1.21.0"
+		"vscode": "^0.10.0"
 	},
 	"categories": [
 		"Other"
