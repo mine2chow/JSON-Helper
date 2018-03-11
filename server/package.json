@@ -2,7 +2,7 @@
 	"name": "json-helper",
 	"displayName": "JSON Helper",
 	"description": "Give you appropriate descriptions for JSON files",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"author": "Feng Zhou",
 	"license": "MIT",
 	"engines": {
