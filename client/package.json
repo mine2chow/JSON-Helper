@@ -3,7 +3,7 @@
     "displayName": "JSON Helper",
     "description": "Give you appropriate descriptions for JSON keys",
     "license": "MIT",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "publisher": "zhoufeng",
     "repository": {
         "type": "git",

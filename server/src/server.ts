@@ -151,6 +151,7 @@ connection.onHover((event):Hover =>{
 			}
 
 			let c = line.charAt(j);
+			// double quatation switch
 			if(c == '"'){
 				isInDoublequotation = !isInDoublequotation;
 				if(isInDoublequotation){
@@ -159,6 +160,11 @@ connection.onHover((event):Hover =>{
 			} else {
 				if(isInDoublequotation){
 					bLabel += c;
+					if(c == "\\"){
+						//escape character support
+						bLabel += line.charAt(j + 1);
+						j += 1;
+					}
 					continue;
 				}
 			}
