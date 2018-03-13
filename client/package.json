@@ -3,7 +3,7 @@
     "displayName": "JSON Helper",
     "description": "Give you appropriate descriptions for JSON keys",
     "license": "MIT",
-    "version": "1.0.9",
+    "version": "1.0.12",
     "publisher": "zhoufeng",
     "repository": {
         "type": "git",
@@ -37,6 +37,6 @@
         "vscode": "^1.1.5",
         "vscode-languageclient": "^3.5.0"
     },
-    "icon": "JSON-icon.gif",
+    "icon": "imgs/JSON-icon.gif",
     "homepage": "https://github.com/mine2chow/JSON-Helper/blob/master/README.md"
 }
