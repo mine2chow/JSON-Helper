@@ -1,6 +1,6 @@
 # JSON-Helper
 
-Privide a hover popup window to describe which layer for the key you are in now.
+Privide a hover popup window to show javascript description for the key it focuses.
 >Note: Only works for pure ".json" files
 
 [View the code](https://github.com/mine2chow/JSON-Helper)
