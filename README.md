@@ -1,10 +1,11 @@
 # JSON-Helper
 
-Privide a hover popup window to show the call path in javascript for the key it focuses.
+Privide a hover popup window to show the call path for the key it focuses.
+
 >Note: Only works for pure ".json" files
 
 [View the code](https://github.com/mine2chow/JSON-Helper)
 
 ## Preview
 
-![avatar](./client/imgs/JSON-Helper.gif)
+![avatar](./imgs/JSON-Helper.gif)

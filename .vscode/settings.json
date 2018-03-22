@@ -1,15 +1,9 @@
 {
-	// set to false to hide directory from the VS Code Document Sidebar
-	"files.exclude": {
-		"client/out/**/*": false,
-		"client/server/**/*": false,
-		"client/node_modules": false,
-		"server/node_modules": false
-	},
-	// set this to false to include "out" folder in search results
-	"search.exclude": {
-		"out": true
-	},
-	"typescript.tsdk": "./node_modules/typescript/lib",
-	"typescript.tsc.autoDetect": "off"
+    "files.exclude": {
+        "out": false // set this to true to hide the "out" folder with the compiled JS files
+    },
+    "search.exclude": {
+        "out": true // set this to false to include "out" folder in search results
+    },
+    "typescript.tsdk": "./node_modules/typescript/lib" // we want to use the TS server from our node_modules folder to control its version
 }
