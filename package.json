@@ -3,7 +3,7 @@
     "displayName": "JSON Helper",
     "description": "Give you appropriate descriptions for JSON keys",
     "license": "MIT",
-    "version": "1.1.0",
+    "version": "1.1.2",
     "publisher": "zhoufeng",
     "repository": {
         "type": "git",
@@ -31,6 +31,17 @@
                     "when": "false"
                 }
             ]
+        },
+        "configuration": {
+            "title": "JSON helper configuration",
+            "properties": {
+                "jsonHelper.object.name": {
+                    "type": "string",
+                    "default": "jsonObj",
+                    "description": "JSON object name for showing",
+                    "scope": "window"
+                }
+            }
         }
     },
     "scripts": {

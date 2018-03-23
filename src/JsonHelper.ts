@@ -1,9 +1,8 @@
 'use strict';
 
-import { Hover, TextDocument, Position, CancellationToken, MarkdownString, Range, Selection } from 'vscode';
+import { Hover, TextDocument, Position, CancellationToken, MarkdownString, Range, Selection, workspace } from 'vscode';
 import { LinkToDocCommandArgs } from './commands/DocLink';
 
-const ROOT_NAME = 'jsonObj';
 const DOCLINK_COMMAND = 'jsonHelper.docLink';
 
 //bracket information class
@@ -72,29 +71,57 @@ export class JsonHelper{
     private _getKeyCursorIn(lines:string[], lineNumber:number, character:number):any{
         let startP, endP;
         let line = lines[lineNumber];
-        //calculate the start point
-        for(var i=character; i>=0; i--){
-            if(line[i] == '"'){
-                startP = i;
-                break;
+
+        let last2DQ = [];
+        let DQCount = 0;
+        //check from 0 to itself
+        for(var i=0; i<=character; i++){
+            let c = line.charAt(i);
+            if(c == '\\'){
+                i++;
+                continue;
+            }
+
+            if(c == '"'){
+                DQCount++;
+                last2DQ.push(i);
+            }
+
+            if(last2DQ.length > 2){
+                last2DQ.shift();
             }
         }
-        if(!startP){
+
+        if(DQCount%2 != 0){
+            startP = last2DQ[last2DQ.length - 1];
+            let i;
+            if(line.charAt(character) == '\\'){
+                i = character + 2;
+            } else {
+                i = character + 1;
+            }
+            for(; i<line.length; i++){
+                let c = line.charAt(i);
+                if(c == '\\'){
+                    i++;
+                    continue;
+                }
+                if(c == '"'){
+                    endP = i;
+                    break;
+                }
+            }
+        } else if(last2DQ.length != 0 && last2DQ[1] == character) {
+            //on right double quotation
+            startP = last2DQ[0];
+            endP = last2DQ[1];
+        }
+
+        if(!startP || !endP){
             return null;
         }
 
-        //calculate the end point
-        for(var i=character+1; i<line.length; i++){
-            if(line[i] == '"'){
-                endP = i;
-                break;
-            }
-        }
-        if(!endP){
-            return null;
-        }
-
-        //make sure it's a key
+        //make sure it's a key, not value
         for(var i=lineNumber; i<lines.length; i++){
             let j;
             if(i == lineNumber){
@@ -102,7 +129,7 @@ export class JsonHelper{
             }
             for(; j<lines[i].length; j++){
                 let c = lines[i].charAt(j);
-                if(c == ' '){
+                if(c == ' ' || c == '\t'){
                     continue;
                 } else if(c == ':'){
                     return {
@@ -124,7 +151,7 @@ export class JsonHelper{
      * @param route Route info list
      */
     private _generateMessage(route:BracketInfo[]):string{
-        let message = ROOT_NAME;
+        let message:string = workspace.getConfiguration().get('jsonHelper.object.name');
         //JSON is a list
         if(route[0].notation == '[' && route[0].keyName == ''){
             message += '['+route[0].listIndex+']';
@@ -241,7 +268,7 @@ export class JsonHelper{
                         break;
                 }
 
-                if(c != ' ' && c != ':' && c != '\r' && c != '\n' && c != '	'){
+                if(c != ' ' && c != ':' && c != '\r' && c != '\n' && c != '\t'){
                     isAfterColon = false;
                 }
             }
