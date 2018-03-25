@@ -1,5 +1,6 @@
 # CHANGELOG
 
+* 1.1.3 - Add background for index number and key names
 * 1.1.2 - Bug fix for current key name detection, add object name configuration
 * 1.1.0 - Now you can jump to the parent keys by clicking on it
 * 1.0.10 - Resources arrangement
