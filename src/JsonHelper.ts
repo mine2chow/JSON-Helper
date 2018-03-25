@@ -58,7 +58,7 @@ export class JsonHelper{
             start: start,
             end: end
         };
-        return this._generateMarkedCommandStr(`"${name}"`, DOCLINK_COMMAND, args, hint);
+        return this._generateMarkedCommandStr(`\`"${name}"\``, DOCLINK_COMMAND, args, hint);
     }
 
 
@@ -154,7 +154,7 @@ export class JsonHelper{
         let message:string = workspace.getConfiguration().get('jsonHelper.object.name');
         //JSON is a list
         if(route[0].notation == '[' && route[0].keyName == ''){
-            message += '['+route[0].listIndex+']';
+            message += '[\`'+route[0].listIndex+'\`]';
         }
 
         for(var i=1; i<route.length; i++){
@@ -162,7 +162,7 @@ export class JsonHelper{
             if(bInfo.notation == '{' && bInfo.keyName != ''){
                 message += `[${this._generateDocLinkCommandStr(bInfo.keyName, bInfo.keyRange.start, bInfo.keyRange.end, "Show key")}]`;
             } else if(bInfo.notation == '[' && bInfo.keyName != ''){
-                message += `[${this._generateDocLinkCommandStr(bInfo.keyName, bInfo.keyRange.start, bInfo.keyRange.end, "Show key")}][${bInfo.listIndex}]`;
+                message += `[${this._generateDocLinkCommandStr(bInfo.keyName, bInfo.keyRange.start, bInfo.keyRange.end, "Show key")}][\`${bInfo.listIndex}\`]`;
             }
         }
         return message;

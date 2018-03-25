@@ -13,7 +13,7 @@ export function activate(context: ExtensionContext) {
 				return new JsonHelper().execute(document, position, token);
 			}
 		});
-
+	
 	context.subscriptions.push(disposable);
 
 	// Register docLink command
