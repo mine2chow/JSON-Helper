@@ -18,6 +18,6 @@ export class CopyToClipboard {
         }
 
         Clipboard.Copy(text);
-        window.showInformationMessage("Message has been copied to clipboard.");
+        window.showInformationMessage("Message has been copied to clipboard successfully.");
     }
 }

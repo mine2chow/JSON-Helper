@@ -1,5 +1,9 @@
 # CHANGELOG
 
+* 1.2.0
+  * Code refactoring
+  * Type description for keys in path string
+  * "copy path" function added
 * 1.1.3 - Add background for index number and key names
 * 1.1.2 - Bug fix for current key name detection, add object name configuration
 * 1.1.0 - Now you can jump to the parent keys by clicking on it

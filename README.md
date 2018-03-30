@@ -2,8 +2,7 @@
 
 Privide a hover popup window to show the call path for the key it focuses.
 
-- You can customize the JSON object name by changing property "jsonHelper.object.name"
-- "jsonObj" is the default value
+- You can customize the JSON object name by changing property "`jsonHelper.object.name`", default value: "`jsonObj`"
 
 >Note: Only works for pure ".json" files
 

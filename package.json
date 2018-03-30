@@ -3,7 +3,7 @@
     "displayName": "JSON Helper",
     "description": "Give you appropriate descriptions for JSON keys",
     "license": "MIT",
-    "version": "1.1.3",
+    "version": "1.2.0",
     "publisher": "zhoufeng",
     "repository": {
         "type": "git",
@@ -20,7 +20,7 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands":[
+        "commands": [
             {
                 "command": "jsonHelper.docLink",
                 "title": "Link to documentation"
@@ -62,9 +62,11 @@
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "dependencies": {
-        "vscode": "^1.1.14",
+        "clipboardy": "^1.2.3",
         "jsonc-parser": "^0.4.2",
-        "clipboardy": "^1.2.3"
+        "npm": "^5.8.0",
+        "update": "^0.7.4",
+        "vscode": "^1.1.14"
     },
     "devDependencies": {
         "@types/node": "9.4.6",
