@@ -1,291 +1,185 @@
 'use strict';
 
-import { Hover, TextDocument, Position, CancellationToken, MarkdownString, Range, Selection, workspace } from 'vscode';
+import * as vscode from 'vscode';
+import * as json from 'jsonc-parser';
+import * as path from 'path';
+import { MarkDownCmd } from './utils/MarkDownCmd';
+import { isNumber } from 'util';
 import { LinkToDocCommandArgs } from './commands/DocLink';
 
 const DOCLINK_COMMAND = 'jsonHelper.docLink';
+const COPYTOCLIPBOARD_COMMAND = 'jsonHelper.copyToClipboard';
 
-//bracket information class
-class BracketInfo {
-    public keyName = '';
-    public keyRange:Range;
-	public notation = '';
-	public line : number;
-	public character : number;
-	public listIndex = 0;
-	public getClosureNotation():string{
-		if(this.notation == '{'){
-			return '}';
-		} else if(this.notation == '['){
-			return ']'
-		}
-		return null;
-	}
-}
 
-export class JsonHelper{
+export class JsonHelperHoverProvider implements vscode.HoverProvider{
+
+    private tree: json.Node;
+	private text: string;
+    private editor: vscode.TextEditor;
+
     constructor(){
-
-    }
-
-    /**
-     * _generateMarkedCommandStr
-     * @param name Name
-     * @param command Command name
-     * @param args Arguments
-     * @param hint Hint for hover
-     */
-    private _generateMarkedCommandStr(name:string, command:string, args:object, hint:string){
-        var str = `[${name}](command:${command}?` + encodeURIComponent(JSON.stringify(args));
-        if(hint != null){
-            str += ` "${hint}")`;
-        } else {
-            str += `)`;
-        }
-        return str;
+        vscode.workspace.onDidChangeTextDocument(e => this.onDocumentChanged(e));
+        vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
+        this.parseTree();
     }
 
 
-    /**
-     * _generateDocLinkCommandStr
-     * @param name Name
-     * @param start Start point
-     * @param end End point
-     * @param hint Hint for hover
-     */
-    private _generateDocLinkCommandStr(name:string, start:Position, end:Position, hint:string = null){
-        var args:LinkToDocCommandArgs = {
-            start: start,
-            end: end
-        };
-        return this._generateMarkedCommandStr(`\`"${name}"\``, DOCLINK_COMMAND, args, hint);
-    }
-
-
-    /**
-     * Get string for the key cursor's hovering now
-     * @param lines 
-     * @param lineNumber 
-     * @param character 
-     */
-    private _getKeyCursorIn(lines:string[], lineNumber:number, character:number):any{
-        let startP, endP;
-        let line = lines[lineNumber];
-
-        let last2DQ = [];
-        let DQCount = 0;
-        //check from 0 to itself
-        for(var i=0; i<=character; i++){
-            let c = line.charAt(i);
-            if(c == '\\'){
-                i++;
-                continue;
-            }
-
-            if(c == '"'){
-                DQCount++;
-                last2DQ.push(i);
-            }
-
-            if(last2DQ.length > 2){
-                last2DQ.shift();
-            }
+    provideHover(document : vscode.TextDocument, position : vscode.Position, token : vscode.CancellationToken) : vscode.ProviderResult<vscode.Hover>{
+        if(!this.tree){
+            //make sure the json tree has been initialized currectly
+            return null;
         }
+        //offset for the current position
+        let offset:number = document.offsetAt(position);
+        const currentLocation = json.getLocation(this.text, offset);
+        let path = currentLocation.path.slice(0);
 
-        if(DQCount%2 != 0){
-            startP = last2DQ[last2DQ.length - 1];
-            let i;
-            if(line.charAt(character) == '\\'){
-                i = character + 2;
-            } else {
-                i = character + 1;
-            }
-            for(; i<line.length; i++){
-                let c = line.charAt(i);
-                if(c == '\\'){
-                    i++;
-                    continue;
-                }
-                if(c == '"'){
-                    endP = i;
-                    break;
-                }
-            }
-        } else if(last2DQ.length != 0 && last2DQ[1] == character) {
-            //on right double quotation
-            startP = last2DQ[0];
-            endP = last2DQ[1];
-        }
-
-        if(!startP || !endP){
+        if(!currentLocation.previousNode){
+            // not on a node
             return null;
         }
 
-        //make sure it's a key, not value
-        for(var i=lineNumber; i<lines.length; i++){
-            let j;
-            if(i == lineNumber){
-                j = endP+1;
-            }
-            for(; j<lines[i].length; j++){
-                let c = lines[i].charAt(j);
-                if(c == ' ' || c == '\t'){
-                    continue;
-                } else if(c == ':'){
-                    return {
-                        name : line.substr(startP+1, endP-startP-1),
-                        start: { line: lineNumber, character: startP },
-                        end: { line: lineNumber, character: endP+1 }
-                };
-                } else {
-                    return null;
-                }
-            }
+        if(!currentLocation.isAtPropertyKey && !isNumber(path[path.length - 1])){
+            // value except list item
+            return null;
+        }
+
+        if(offset >= currentLocation.previousNode.offset + currentLocation.previousNode.length){
+            return null;
+        }
+
+        
+        let msg:string = this.generateMsgByPath(path, document);
+
+        if (msg) {
+            let range = new vscode.Range(
+                document.positionAt(currentLocation.previousNode.offset),
+                document.positionAt(currentLocation.previousNode.offset + currentLocation.previousNode.length)
+            )
+            let hoverContent = new vscode.MarkdownString(msg);
+            hoverContent.isTrusted = true;
+
+            return new vscode.Hover(hoverContent, range);
         }
 
         return null;
     }
 
-    /**
-     * Convert Route info list to message
-     * @param route Route info list
-     */
-    private _generateMessage(route:BracketInfo[]):string{
-        let message:string = workspace.getConfiguration().get('jsonHelper.object.name');
-        //JSON is a list
-        if(route[0].notation == '[' && route[0].keyName == ''){
-            message += '[\`'+route[0].listIndex+'\`]';
-        }
 
-        for(var i=1; i<route.length; i++){
-            let bInfo = route[i];
-            if(bInfo.notation == '{' && bInfo.keyName != ''){
-                message += `[${this._generateDocLinkCommandStr(bInfo.keyName, bInfo.keyRange.start, bInfo.keyRange.end, "Show key")}]`;
-            } else if(bInfo.notation == '[' && bInfo.keyName != ''){
-                message += `[${this._generateDocLinkCommandStr(bInfo.keyName, bInfo.keyRange.start, bInfo.keyRange.end, "Show key")}][\`${bInfo.listIndex}\`]`;
-            }
-        }
-        return message;
-    }
-
-    /**
-     * execute
-     * @param document Document
-     * @param position Position
-     * @param token Token
-     */
-    public execute(document : TextDocument, position : Position, token : CancellationToken) : Hover{
-        //connection.console.log(documents.get(event.textDocument.uri).getText());
-        let text: string = document.getText();
-        let lines = text.split(/\r?\n/g);
-        let route = [];
-        let isInDoublequotation = false;
-        let message = '';
-        let loopEnd = false;
-        //lastest label in double quotation
-        let bLabel = '';
-        //lastest double quotation start postion
-        let bLabelStart:Position;
-        //lastest double quotation end postion
-        let bLabelEnd:Position
-        let isAfterColon = false;
-
-        let keyCursorIn = this._getKeyCursorIn(lines, position.line, position.character);
-        if(!keyCursorIn){
+    private generateMsgByPath(path : json.Segment[], document : vscode.TextDocument) : string {
+        if(path.length == 0){
             return null;
         }
 
+        let node = json.findNodeAtLocation(this.tree, path);
+        
+        let nodeMsgList = [];
+        let plainPathList = [];
+        let currentKey;
 
-        for(var i=0; i<=position.line; i++){
-            if(loopEnd){
-                break;
-            }
-
-            let line = lines[i];
-            for(var j=0; j<line.length; j++){
-                if(loopEnd){
-                    break;
-                }
-
-                if(i == position.line && j == position.character){
-                    break;
-                }
-
-                let c = line.charAt(j);
-                // double quatation switch
-                if(c == '"'){
-                    isInDoublequotation = !isInDoublequotation;
-                    if(isInDoublequotation){
-                        bLabel ='';
-                        bLabelStart = new Position(i, j);
+        while((currentKey = path.pop()) != null){
+            if(isNumber(currentKey)){
+                nodeMsgList.push(`[\`${currentKey}\`]`);
+                plainPathList.push(`[${currentKey}]`);
+            } else {
+                if(node.parent.type == 'property'){
+                    let keyNode = node.parent.children[0];
+                    //in order to get the origin text, in case of escape character
+                    let keyOrignText = this.text.substr(keyNode.offset, keyNode.length);
+                    let keyHint;
+                    if(node.type == 'array' || node.type == 'object'){
+                        keyHint = `${node.type}, length:${node.children.length}`;
                     } else {
-                        bLabelEnd = new Position(i, j + 1);
+                        keyHint = `${node.type}`;
                     }
+                    nodeMsgList.push(`[${this.generateDocLinkCommandStr(keyOrignText, document.positionAt(keyNode.offset), document.positionAt(keyNode.offset + keyNode.length), keyHint)}]`);
+                    plainPathList.push(`[${keyOrignText}]`);
                 } else {
-                    if(isInDoublequotation){
-                        bLabel += c;
-                        if(c == "\\"){
-                            //escape character support
-                            bLabel += line.charAt(j + 1);
-                            j += 1;
-                        }
-                        continue;
-                    }
-                }
-
-                if(c == ':'){
-                    isAfterColon = true;
-                } 
-
-                switch(c){
-                    case '{':
-                    case '[':
-                        let bInfo = new BracketInfo();
-                        bInfo.line = i;
-                        bInfo.character = j;
-                        bInfo.notation = c;
-                        if(isAfterColon){
-                            bInfo.keyName = bLabel;
-                            bInfo.keyRange = new Range(bLabelStart, bLabelEnd);
-                        }
-                        route.push(bInfo);
-                        break;
-                    case '}':
-                    case ']':
-                        if(route[route.length-1].getClosureNotation() == c){
-                            route.pop();
-                        } else {
-                            message = 'Incorrect JSON Format!';
-                            loopEnd = true;
-                        }
-                        break;;
-                    case ',':
-                        if(route.length > 0 && route[route.length-1].notation == '['){
-                            route[route.length-1].listIndex++;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                if(c != ' ' && c != ':' && c != '\r' && c != '\n' && c != '\t'){
-                    isAfterColon = false;
+                    nodeMsgList.push(`[\`Error\`]`);
+                    plainPathList.push(`[\`Error\`]`);
                 }
             }
+            node = json.findNodeAtLocation(this.tree, path);
         }
 
-        if(!loopEnd){
-            message = `${this._generateMessage(route)}[${this._generateDocLinkCommandStr(keyCursorIn.name, keyCursorIn.start, keyCursorIn.end, "Show key")}]`;
-            //message = this._generateMessage(route) + '["' + keyCursorIn.name + '"]';
-        }
-
-
-        let hoverContent = new MarkdownString(message);
-        hoverContent.isTrusted = true;
-
-        let range = new Range(new Position(keyCursorIn.start.line, keyCursorIn.start.character), 
-        						new Position(keyCursorIn.end.line, keyCursorIn.end.character));
-
-        return new Hover(hoverContent,range);
+        return this.generateMsg(nodeMsgList, plainPathList);
     }
+
+    /**
+     * Generate message by node list
+     * @param nodeMsgList node message list
+     * @param plainPathList node plain message list
+     */
+    private generateMsg(nodeMsgList:string[], plainPathList:string[] = []) : string{
+        let msg:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
+        let plainMsg:string = "";
+        if(plainPathList.length != 0){
+            plainMsg = this.generateCopyToClipboardCommandPic(msg + plainPathList.reverse().join(""));
+        }
+
+        return msg + nodeMsgList.reverse().join('') + "&nbsp;" + plainMsg;
+    }
+
+
+    /**
+     * generateDocLinkCommandStr
+     * @param name Name
+     * @param start Start point
+     * @param end End point
+     * @param hint Hint for hover
+     */
+    private generateDocLinkCommandStr(name:string, start:vscode.Position, end:vscode.Position, hint:string = null){
+        var args:LinkToDocCommandArgs = {
+            start: start,
+            end: end
+        };
+        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, DOCLINK_COMMAND, args, hint);
+    }
+
+    /**
+     * generateCopyToClipboardCommandStr
+     * @param text Text to copy 
+     */
+    private generateCopyToClipboardCommandPic(text:string) {
+        let args = {text: `${text}`};
+        return MarkDownCmd.generateMarkedCommandPic('copy', COPYTOCLIPBOARD_COMMAND, args, 'icon-copy.png', 'Copy path to clipboard');
+    }
+
+
+    private parseTree(): void {
+		this.text = '';
+		this.tree = null;
+		this.editor = vscode.window.activeTextEditor;
+		if (this.editor && this.editor.document) {
+			this.text = this.editor.document.getText();
+			this.tree = json.parseTree(this.text);
+		}
+    }
+    
+
+    private onDocumentChanged(changeEvent: vscode.TextDocumentChangeEvent): void {
+		if (changeEvent.document.uri.toString() === this.editor.document.uri.toString()) {
+			for (const change of changeEvent.contentChanges) {
+				//const path = json.getLocation(this.text, this.editor.document.offsetAt(change.range.start)).path;
+				//path.pop();
+				//const node = path.length ? json.findNodeAtLocation(this.tree, path) : void 0;
+				this.parseTree();
+				//this._onDidChangeTreeData.fire(node ? node.offset : void 0);
+			}
+		}
+    }
+    
+    private onActiveEditorChanged(): void {
+		if (vscode.window.activeTextEditor) {
+			if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
+				const enabled = vscode.window.activeTextEditor.document.languageId === 'json'/* || vscode.window.activeTextEditor.document.languageId === 'jsonc'*/;
+				//vscode.commands.executeCommand('setContext', 'jsonHelperEnabled', enabled);
+				if (enabled) {
+					this.parseTree();
+				}
+			}
+		} else {
+			//vscode.commands.executeCommand('setContext', 'jsonHelperEnabled', false);
+		}
+	}
 }

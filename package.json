@@ -20,14 +20,24 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": {
-            "command": "jsonHelper.docLink",
-            "title": "Link to documentation"
-        },
+        "commands":[
+            {
+                "command": "jsonHelper.docLink",
+                "title": "Link to documentation"
+            },
+            {
+                "command": "jsonHelper.copyToClipboard",
+                "title": "Copy text to clipboard"
+            }
+        ],
         "menus": {
             "commandPalette": [
                 {
                     "command": "jsonHelper.docLink",
+                    "when": "false"
+                },
+                {
+                    "command": "jsonHelper.copyToClipboard",
                     "when": "false"
                 }
             ]
@@ -52,12 +62,13 @@
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "dependencies": {
-        "vscode": "^1.1.14"
+        "vscode": "^1.1.14",
+        "jsonc-parser": "^0.4.2",
+        "clipboardy": "^1.2.3"
     },
     "devDependencies": {
         "@types/node": "9.4.6",
-        "typescript": "2.7.2",
-        "vscode": "1.1.14"
+        "typescript": "2.7.2"
     },
     "icon": "imgs/JSON-icon.gif",
     "homepage": "https://github.com/mine2chow/JSON-Helper/blob/master/README.md"
