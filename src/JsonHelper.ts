@@ -114,10 +114,11 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
         let msg:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
         let plainMsg:string = "";
         if(plainPathList.length != 0){
-            plainMsg = this.generateCopyToClipboardCommandPic(msg + plainPathList.reverse().join(""));
+            plainMsg = this.generateCopyToClipboardCommandStr('✎', msg + plainPathList.reverse().join(""));
+            //plainMsg = this.generateCopyToClipboardCommandPic(msg + plainPathList.reverse().join(""));
         }
 
-        return msg + nodeMsgList.reverse().join('') + "&nbsp;" + plainMsg;
+        return msg + nodeMsgList.reverse().join('') + "&nbsp;&nbsp;" + plainMsg;
     }
 
 
@@ -143,6 +144,15 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
     private generateCopyToClipboardCommandPic(text:string) {
         let args = {text: `${text}`};
         return MarkDownCmd.generateMarkedCommandPic('copy', COPYTOCLIPBOARD_COMMAND, args, 'icon-copy.png', 'Copy path to clipboard');
+    }
+
+    /**
+     * generateCopyToClipboardCommandStr
+     * @param text Text to copy 
+     */
+    private generateCopyToClipboardCommandStr(name:string, text:string) {
+        let args = {text: `${text}`};
+        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, COPYTOCLIPBOARD_COMMAND, args, 'Copy path to clipboard');
     }
 
 

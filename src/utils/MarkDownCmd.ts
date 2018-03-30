@@ -29,7 +29,7 @@ export class MarkDownCmd {
      */
     public static generateMarkedCommandPic(name:string, command:string, args:object, picLoc:string, hint:string){
         picLoc = 'https://github.com/mine2chow/JSON-Helper/raw/master/imgs/' + picLoc;
-        var str = `[\`![${name}](${picLoc})\`](command:${command}?` + encodeURIComponent(JSON.stringify(args));
+        var str = `[![${name}](${picLoc})](command:${command}?` + encodeURIComponent(JSON.stringify(args));
         if(hint != null){
             str += ` "${hint}")`;
         } else {
