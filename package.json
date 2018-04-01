@@ -3,7 +3,7 @@
     "displayName": "JSON Helper",
     "description": "Make your navigation in JSON file easier",
     "license": "MIT",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "publisher": "zhoufeng",
     "repository": {
         "type": "git",

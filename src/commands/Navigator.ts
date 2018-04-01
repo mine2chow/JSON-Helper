@@ -136,7 +136,7 @@ export class MoveToNextKey {
 
             if(i == parent.children.length){
                 //already first node of current layer
-                window.showInformationMessage('buttom of the current layer.');
+                window.showInformationMessage('Buttom of the current layer');
                 
                 i = i - 1;
             }
@@ -159,7 +159,7 @@ export class MoveToNextKey {
             let index = childrenList.indexOf(currentProperty);
             if(index == childrenList.length - 1){
                 //already first node of current layer
-                window.showInformationMessage('Buttom of the current layer.');
+                window.showInformationMessage('Buttom of the current layer');
                 
                 index = index - 1;
             }
