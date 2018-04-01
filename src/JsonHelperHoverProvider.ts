@@ -2,36 +2,30 @@
 
 import * as vscode from 'vscode';
 import * as json from 'jsonc-parser';
-import * as path from 'path';
 import { MarkDownCmd } from './utils/MarkDownCmd';
 import { isNumber } from 'util';
 import { LinkToDocCommandArgs } from './commands/DocLink';
-
-const DOCLINK_COMMAND = 'jsonHelper.docLink';
-const COPYTOCLIPBOARD_COMMAND = 'jsonHelper.copyToClipboard';
+import { JsonCommonInfo } from './JsonCommonInfo';
+import { DOCLINK_COMMAND, COPYTOCLIPBOARD_COMMAND } from './commands/CommandCommonInfo';
 
 
 export class JsonHelperHoverProvider implements vscode.HoverProvider{
 
-    private tree: json.Node;
-	private text: string;
-    private editor: vscode.TextEditor;
+    private jsonCommonInfo:JsonCommonInfo;
 
-    constructor(){
-        vscode.workspace.onDidChangeTextDocument(e => this.onDocumentChanged(e));
-        vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
-        this.parseTree();
+    constructor(jsonCommonInfo:JsonCommonInfo){
+        this.jsonCommonInfo = jsonCommonInfo;
     }
 
 
     provideHover(document : vscode.TextDocument, position : vscode.Position, token : vscode.CancellationToken) : vscode.ProviderResult<vscode.Hover>{
-        if(!this.tree){
+        if(!this.jsonCommonInfo.getJsonTree()){
             //make sure the json tree has been initialized currectly
             return null;
         }
         //offset for the current position
         let offset:number = document.offsetAt(position);
-        const currentLocation = json.getLocation(this.text, offset);
+        const currentLocation = json.getLocation(this.jsonCommonInfo.getJsonText(), offset);
         let path = currentLocation.path.slice(0);
 
         if(!currentLocation.previousNode){
@@ -71,7 +65,7 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
             return null;
         }
 
-        let node = json.findNodeAtLocation(this.tree, path);
+        let node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
         
         let nodeMsgList = [];
         let plainPathList = [];
@@ -85,13 +79,8 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
                 if(node.parent.type == 'property'){
                     let keyNode = node.parent.children[0];
                     //in order to get the origin text, in case of escape character
-                    let keyOrignText = this.text.substr(keyNode.offset, keyNode.length);
-                    let keyHint;
-                    if(node.type == 'array' || node.type == 'object'){
-                        keyHint = `${node.type}, length:${node.children.length}`;
-                    } else {
-                        keyHint = `${node.type}`;
-                    }
+                    let keyOrignText = this.jsonCommonInfo.getJsonText().substr(keyNode.offset, keyNode.length);
+                    let keyHint = this.getKeyHint(node);
                     nodeMsgList.push(`[${this.generateDocLinkCommandStr(keyOrignText, document.positionAt(keyNode.offset), document.positionAt(keyNode.offset + keyNode.length), keyHint)}]`);
                     plainPathList.push(`[${keyOrignText}]`);
                 } else {
@@ -99,10 +88,31 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
                     plainPathList.push(`[\`Error\`]`);
                 }
             }
-            node = json.findNodeAtLocation(this.tree, path);
+            node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
         }
 
+        //root node
+        let keyRootName:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
+        node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), []);
+        nodeMsgList.push(`${this.generateDocLinkCommandStr(keyRootName, 
+            document.positionAt(node.offset), document.positionAt(node.offset), this.getKeyHint(node))}`);
+        plainPathList.push(`${keyRootName}`);
+
         return this.generateMsg(nodeMsgList, plainPathList);
+    }
+
+    /**
+     * get hint for node
+     * @param node Node
+     */
+    private getKeyHint(node:json.Node) : string {
+        let keyHint:string;
+        if(node.type == 'array' || node.type == 'object'){
+            keyHint = `${node.type}, length:${node.children.length}`;
+        } else {
+            keyHint = `${node.type}`;
+        }
+        return keyHint;
     }
 
     /**
@@ -111,14 +121,14 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
      * @param plainPathList node plain message list
      */
     private generateMsg(nodeMsgList:string[], plainPathList:string[] = []) : string{
-        let msg:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
+        //let msg:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
         let plainMsg:string = "";
         if(plainPathList.length != 0){
-            plainMsg = this.generateCopyToClipboardCommandStr('✎', msg + plainPathList.reverse().join(""));
+            plainMsg = this.generateCopyToClipboardCommandStr('✎', plainPathList.reverse().join(""));
             //plainMsg = this.generateCopyToClipboardCommandPic(msg + plainPathList.reverse().join(""));
         }
 
-        return msg + nodeMsgList.reverse().join('') + "&nbsp;&nbsp;" + plainMsg;
+        return nodeMsgList.reverse().join('') + "&nbsp;&nbsp;" + plainMsg;
     }
 
 
@@ -136,6 +146,7 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
         };
         return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, DOCLINK_COMMAND, args, hint);
     }
+    
 
     /**
      * generateCopyToClipboardCommandStr
@@ -155,41 +166,4 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
         return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, COPYTOCLIPBOARD_COMMAND, args, 'Copy path to clipboard');
     }
 
-
-    private parseTree(): void {
-		this.text = '';
-		this.tree = null;
-		this.editor = vscode.window.activeTextEditor;
-		if (this.editor && this.editor.document) {
-			this.text = this.editor.document.getText();
-			this.tree = json.parseTree(this.text);
-		}
-    }
-    
-
-    private onDocumentChanged(changeEvent: vscode.TextDocumentChangeEvent): void {
-		if (changeEvent.document.uri.toString() === this.editor.document.uri.toString()) {
-			for (const change of changeEvent.contentChanges) {
-				//const path = json.getLocation(this.text, this.editor.document.offsetAt(change.range.start)).path;
-				//path.pop();
-				//const node = path.length ? json.findNodeAtLocation(this.tree, path) : void 0;
-				this.parseTree();
-				//this._onDidChangeTreeData.fire(node ? node.offset : void 0);
-			}
-		}
-    }
-    
-    private onActiveEditorChanged(): void {
-		if (vscode.window.activeTextEditor) {
-			if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
-				const enabled = vscode.window.activeTextEditor.document.languageId === 'json'/* || vscode.window.activeTextEditor.document.languageId === 'jsonc'*/;
-				//vscode.commands.executeCommand('setContext', 'jsonHelperEnabled', enabled);
-				if (enabled) {
-					this.parseTree();
-				}
-			}
-		} else {
-			//vscode.commands.executeCommand('setContext', 'jsonHelperEnabled', false);
-		}
-	}
 }

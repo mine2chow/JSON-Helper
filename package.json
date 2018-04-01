@@ -1,7 +1,7 @@
 {
     "name": "json-helper",
     "displayName": "JSON Helper",
-    "description": "Give you appropriate descriptions for JSON keys",
+    "description": "Help you navigate JSON file easier",
     "license": "MIT",
     "version": "1.2.0",
     "publisher": "zhoufeng",
@@ -28,6 +28,14 @@
             {
                 "command": "jsonHelper.copyToClipboard",
                 "title": "Copy text to clipboard"
+            },
+            {
+                "command": "jsonHelper.moveToPreviousKey",
+                "title": "Navigate to the previous key of current layer"
+            },
+            {
+                "command": "jsonHelper.moveToNextKey",
+                "title": "Navigate to the next key of current layer"
             }
         ],
         "menus": {
@@ -38,6 +46,14 @@
                 },
                 {
                     "command": "jsonHelper.copyToClipboard",
+                    "when": "false"
+                },
+                {
+                    "command": "jsonHelper.moveToPreviousKey",
+                    "when": "false"
+                },
+                {
+                    "command": "jsonHelper.moveToNextKey",
                     "when": "false"
                 }
             ]
