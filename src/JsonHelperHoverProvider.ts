@@ -76,7 +76,7 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
                 nodeMsgList.push(`[\`${currentKey}\`]`);
                 plainPathList.push(`[${currentKey}]`);
             } else {
-                if(node.parent.type == 'property'){
+                if(node.parent.type === 'property'){
                     let keyNode = node.parent.children[0];
                     //in order to get the origin text, in case of escape character
                     let keyOrignText = this.jsonCommonInfo.getJsonText().substr(keyNode.offset, keyNode.length);

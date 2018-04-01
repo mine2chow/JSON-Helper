@@ -6,6 +6,28 @@ import { isNumber } from "util";
 import { DOCLINK_COMMAND } from './CommandCommonInfo';
 import { LinkToDocCommandArgs } from './DocLink';
 
+function moveToNode(textEditor: TextEditor, node:json.Node){
+    let linkArgs:LinkToDocCommandArgs;
+
+    if(node.type === 'property'){
+        linkArgs = {
+            start: textEditor.document.positionAt(node.children[0].offset),
+            end: textEditor.document.positionAt(node.children[0].offset + node.children[0].length)
+        };
+    } else if(node.type === 'array' || node.type === 'object'){
+        linkArgs = {
+            start: textEditor.document.positionAt(node.offset),
+            end: textEditor.document.positionAt(node.offset)
+        };
+    } else {
+        linkArgs = {
+            start: textEditor.document.positionAt(node.offset),
+            end: textEditor.document.positionAt(node.offset + node.length)
+        };
+    }
+
+    commands.executeCommand(DOCLINK_COMMAND, linkArgs);
+}
 export class MoveToPreKey {
     private jsonCommonInfo:JsonCommonInfo;
 
@@ -42,8 +64,8 @@ export class MoveToPreKey {
 
             if(i == -1){
                 //already first node of current layer
-                window.showInformationMessage('Top of the current layer.');
-                return null;
+                window.showInformationMessage('Top of the current layer');
+                i = 0;
             }
 
             preNode = parent.children[i];
@@ -64,29 +86,16 @@ export class MoveToPreKey {
             let index = childrenList.indexOf(currentProperty);
             if(index == 0){
                 //already first node of current layer
-                window.showInformationMessage('Top of the current layer.');
-                return null;
+                window.showInformationMessage('Top of the current layer');
+
+                index = 1;
             }
             
             preNode = childrenList[index - 1];
         }
 
 
-        if(preNode.type === 'property'){
-            const linkArgs:LinkToDocCommandArgs = {
-                start: textEditor.document.positionAt(preNode.children[0].offset),
-                end: textEditor.document.positionAt(preNode.children[0].offset + preNode.children[0].length)
-            };
-
-            commands.executeCommand(DOCLINK_COMMAND, linkArgs);
-        } else if(preNode.type === 'array' || preNode.type === 'object'){
-            const linkArgs:LinkToDocCommandArgs = {
-                start: textEditor.document.positionAt(preNode.offset),
-                end: textEditor.document.positionAt(preNode.offset)
-            };
-
-            commands.executeCommand(DOCLINK_COMMAND, linkArgs);
-        }
+        moveToNode(textEditor, preNode);
 
     }
 }
@@ -128,7 +137,8 @@ export class MoveToNextKey {
             if(i == parent.children.length){
                 //already first node of current layer
                 window.showInformationMessage('buttom of the current layer.');
-                return null;
+                
+                i = i - 1;
             }
 
             nextNode = parent.children[i];
@@ -150,28 +160,15 @@ export class MoveToNextKey {
             if(index == childrenList.length - 1){
                 //already first node of current layer
                 window.showInformationMessage('Buttom of the current layer.');
-                return null;
+                
+                index = index - 1;
             }
             
             nextNode = childrenList[index + 1];
         }
 
 
-        if(nextNode.type === 'property'){
-            const linkArgs:LinkToDocCommandArgs = {
-                start: textEditor.document.positionAt(nextNode.children[0].offset),
-                end: textEditor.document.positionAt(nextNode.children[0].offset + nextNode.children[0].length)
-            };
-
-            commands.executeCommand(DOCLINK_COMMAND, linkArgs);
-        } else if(nextNode.type === 'array' || nextNode.type === 'object'){
-            const linkArgs:LinkToDocCommandArgs = {
-                start: textEditor.document.positionAt(nextNode.offset),
-                end: textEditor.document.positionAt(nextNode.offset)
-            };
-
-            commands.executeCommand(DOCLINK_COMMAND, linkArgs);
-        }
+        moveToNode(textEditor, nextNode);
 
     }
 }

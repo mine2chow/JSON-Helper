@@ -1,5 +1,6 @@
 # CHANGELOG
 
+* 1.2.1 - Implemented a simple key navigator for current layer
 * 1.2.0
   * Code refactoring
   * Type description for keys in path string

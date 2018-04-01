@@ -33,12 +33,12 @@ export class StatusBarController {
 				const enabled = vscode.window.activeTextEditor.document.languageId === 'json'/* || vscode.window.activeTextEditor.document.languageId === 'jsonc'*/;
 				if (enabled) {
 					this.statusIconMovePreKey.show();
-	                this.statusIconMoveNextKey.show();
-                } else {
-                    this.statusIconMovePreKey.hide();
-	                this.statusIconMoveNextKey.hide();
+                    this.statusIconMoveNextKey.show();
+                    return;
                 }
 			}
-		}
+        }
+        this.statusIconMovePreKey.hide();
+	    this.statusIconMoveNextKey.hide();
 	}
 }

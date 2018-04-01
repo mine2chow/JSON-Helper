@@ -2,7 +2,7 @@
 
 //import * as path from 'path';
 
-import { workspace, ExtensionContext, commands, window, languages, Hover, StatusBarAlignment } from 'vscode';
+import { workspace, ExtensionContext, commands, window, languages, Hover, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { JsonHelperHoverProvider } from './JsonHelperHoverProvider';
 // import { JsonSidebarProvider } from './JsonSidebarProvider';
 import { LinkToDocCommandArgs, DocLink } from './commands/DocLink';
@@ -11,6 +11,8 @@ import { JsonCommonInfo } from './JsonCommonInfo';
 import { StatusBarController } from './StatusBarController';
 import * as cCmd from './commands/CommandCommonInfo';
 import { MoveToPreKey, MoveToNextKey } from './commands/Navigator';
+
+let statusIconMovePreKey:StatusBarItem, statusIconMoveNextKey:StatusBarItem;
 
 export function activate(context: ExtensionContext) {
 
@@ -52,8 +54,8 @@ export function activate(context: ExtensionContext) {
 
 
 	//status bar navigation icon
-	const statusIconMovePreKey = window.createStatusBarItem(StatusBarAlignment.Left, 11);
-	const statusIconMoveNextKey = window.createStatusBarItem(StatusBarAlignment.Left, 10);
+	statusIconMovePreKey = window.createStatusBarItem(StatusBarAlignment.Left, 11);
+	statusIconMoveNextKey = window.createStatusBarItem(StatusBarAlignment.Left, 10);
 	new StatusBarController(jsonCommonInfo, statusIconMovePreKey, statusIconMoveNextKey);
 
 	// const jsonSidebarProvider = new JsonSidebarProvider(jsonCommonInfo, context);
@@ -70,4 +72,17 @@ export function activate(context: ExtensionContext) {
 	// context.subscriptions.push(
 	// 	commands.registerCommand('jsonHelperSidebar.renameNode', offset => jsonSidebarProvider.rename(offset))
 	// );
+}
+
+function deactivate() {
+	if(statusIconMovePreKey){
+		statusIconMovePreKey.hide();
+		statusIconMovePreKey.dispose();
+		statusIconMovePreKey = null;
+	}
+	if(statusIconMoveNextKey){
+		statusIconMoveNextKey.hide();
+		statusIconMoveNextKey.dispose();
+		statusIconMoveNextKey = null;
+	}
 }
