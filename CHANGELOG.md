@@ -1,5 +1,6 @@
 # CHANGELOG
 
+* 1.2.4 - Support for switching language mode manully
 * 1.2.3 - Fix message
 * 1.2.1 - Implemented a simple key navigator for current layer
 * 1.2.0

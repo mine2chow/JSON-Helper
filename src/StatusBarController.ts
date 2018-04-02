@@ -23,13 +23,14 @@ export class StatusBarController {
         this.statusIconMovePreKey = statusIconMovePreKey;
         this.statusIconMoveNextKey = statusIconMoveNextKey;
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
+        vscode.workspace.onDidOpenTextDocument(e => this.onDocumentOpened(e));
         
         this.onActiveEditorChanged();
     }
 
     private onActiveEditorChanged(): void {
 		if (vscode.window.activeTextEditor) {
-			if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
+			if (vscode.window.activeTextEditor.document.uri.scheme === 'file' || vscode.window.activeTextEditor.document.isUntitled) {
 				const enabled = vscode.window.activeTextEditor.document.languageId === 'json'/* || vscode.window.activeTextEditor.document.languageId === 'jsonc'*/;
 				if (enabled) {
 					this.statusIconMovePreKey.show();
@@ -40,5 +41,21 @@ export class StatusBarController {
         }
         this.statusIconMovePreKey.hide();
 	    this.statusIconMoveNextKey.hide();
-	}
+    }
+    
+    private onDocumentOpened(event: vscode.TextDocument): void {
+        //only works for language mode change manually
+        if (vscode.window.activeTextEditor) {
+            //document to open is the same as what shown in editor
+            if(event.uri.toString() === vscode.window.activeTextEditor.document.uri.toString()){
+                if(event.languageId === 'json'){
+                    this.statusIconMovePreKey.show();
+                    this.statusIconMoveNextKey.show();
+                } else {
+                    this.statusIconMovePreKey.hide();
+	                this.statusIconMoveNextKey.hide();
+                }
+            }
+        }
+    }
 }

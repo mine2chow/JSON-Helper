@@ -33,6 +33,7 @@ export class JsonCommonInfo {
     constructor(){
         vscode.workspace.onDidChangeTextDocument(e => this.onDocumentChanged(e));
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
+        vscode.workspace.onDidOpenTextDocument(e => this.onDocumentOpened(e));
         this.parseTree();
     }
 
@@ -54,10 +55,22 @@ export class JsonCommonInfo {
 			}
 		}
     }
+
+    private onDocumentOpened(event: vscode.TextDocument): void {
+        //only works for language mode change manually
+        if (vscode.window.activeTextEditor) {
+            //document to open is the same as what shown in editor
+            if(event.uri.toString() === vscode.window.activeTextEditor.document.uri.toString() && event.languageId === 'json'){
+                this.parseTree();
+            }
+        }
+    }
     
     private onActiveEditorChanged(): void {
 		if (vscode.window.activeTextEditor) {
-			if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
+
+            //vscode.window.activeTextEditor.document.uri.scheme === 'untitled'
+			if (vscode.window.activeTextEditor.document.uri.scheme === 'file' || vscode.window.activeTextEditor.document.isUntitled) {
 				const enabled = vscode.window.activeTextEditor.document.languageId === 'json'/* || vscode.window.activeTextEditor.document.languageId === 'jsonc'*/;
 				if (enabled) {
 					this.parseTree();

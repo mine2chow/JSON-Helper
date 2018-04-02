@@ -39,6 +39,11 @@ export class MoveToPreKey {
      * move
      */
     public move(textEditor: TextEditor, edit: TextEditorEdit, ...args: any[]) {
+
+        if(!this.jsonCommonInfo.getJsonTree()){
+            return;
+        }
+
         const cursorPosition = textEditor.selection.active;
         const cursorOfffset = textEditor.document.offsetAt(cursorPosition);
         let jsonLocation = json.getLocation(this.jsonCommonInfo.getJsonText(), cursorOfffset);
@@ -111,6 +116,11 @@ export class MoveToNextKey {
      * move
      */
     public move(textEditor: TextEditor, edit: TextEditorEdit, ...args: any[]) {
+
+        if(!this.jsonCommonInfo.getJsonTree()){
+            return;
+        }
+        
         const cursorPosition = textEditor.selection.active;
         const cursorOfffset = textEditor.document.offsetAt(cursorPosition);
         let jsonLocation = json.getLocation(this.jsonCommonInfo.getJsonText(), cursorOfffset);
