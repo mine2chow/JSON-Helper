@@ -1,6 +1,6 @@
 # JSON-Helper
 
-[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/zhoufeng.json-helper.svg)](https://marketplace.visualstudio.com/items?itemName=zhoufeng.json-helper)
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/zhoufeng.json-helper.svg)](https://marketplace.visualstudio.com/items?itemName=zhoufeng.json-helper) [![Extension Installs](https://vsmarketplacebadge.apphb.com/installs/zhoufeng.json-helper.svg)](https://marketplace.visualstudio.com/items?itemName=zhoufeng.json-helper) [![Extension Rating](https://vsmarketplacebadge.apphb.com/rating/zhoufeng.json-helper.svg)](https://marketplace.visualstudio.com/items?itemName=zhoufeng.json-helper)
 
 Privide a hover popup window to show the call path for the key it focuses, and a simple navigator to help you navigate to the previou or next key in the same layer.
 
