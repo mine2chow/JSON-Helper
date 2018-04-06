@@ -10,7 +10,9 @@
 |Outline for current key|"`▤`" button on hover window will show the outline of the current layer and children of the current key, configure propery "`jsonHelper.quickpick.maxlayer`" to limit the max layer depth for children in outline, default "`99`" |
 
 -----------
+
 ## Description
+
 Help you navigate your JSON file with hover window, navigator and outline.
 
 - You can customize the JSON object name by changing property "`jsonHelper.object.name`", default value: "`jsonObj`"
