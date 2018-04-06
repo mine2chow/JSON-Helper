@@ -3,7 +3,7 @@
 * 1.3.0
   * Quick pick view for brother and child nodes
   * Able to navigate to an array item from hover window
-  * Also pop up hover window for array item
+  * Hover window also works for array item
 * 1.2.4 - Support for switching language mode manully
 * 1.2.3 - Fix message
 * 1.2.1 - Implemented a simple key navigator for current layer

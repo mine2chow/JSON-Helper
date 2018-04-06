@@ -141,7 +141,7 @@ export class JsonQuickPicker {
     /**
      * showChildBrotherNode
      */
-    public showChildBrotherNode(path: json.Segment[] = []) {
+    public showChildBrotherNode(path: json.Segment[] = [], ttl:number = -1) {
         if(!this.jsonCommonInfo){
             return;
         }
@@ -161,14 +161,27 @@ export class JsonQuickPicker {
                 (isNumber(currentKey) && nodeItem.offset == node.offset)){
                 // Reach current node
                 let maxLayer:number = workspace.getConfiguration().get('jsonHelper.quickpick.maxlayer');
-                this.recurChildren(pickerItems, maxLayer - 1, nodeItem, 1);
+                if(ttl == -1){
+                    ttl = maxLayer;
+                }
+
+                this.recurChildren(pickerItems, ttl - 1, nodeItem, 1);
 
             }
         }
         
-
+        let placeHolderStr = "";
+        if(path.length == 0) {
+            placeHolderStr = `Outline of JSON file, input something to search`;
+        } else if(currentKey && !isNumber(currentKey)) {
+            placeHolderStr = `Outline of key [${currentKey}], input something to search`;
+        } else if(isNumber(currentKey)) {
+            placeHolderStr = `Outline of ${path[path.length - 1]}[${currentKey}], input something to search`;
+        } else {
+            placeHolderStr = `Input something to search`;
+        }
         window.showQuickPick(pickerItems, {
-            placeHolder: "Navigate to child or brother node"
+            placeHolder: placeHolderStr
         }).then((selected: JsonQuickPickItem) => {
             this.moveToNode(this.jsonCommonInfo.getEditor(), selected.jsonNode);
         });

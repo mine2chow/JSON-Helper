@@ -3,14 +3,14 @@
     "displayName": "JSON Helper",
     "description": "Make your navigation in JSON file easier",
     "license": "MIT",
-    "version": "1.2.4",
+    "version": "1.3.0",
     "publisher": "zhoufeng",
     "repository": {
         "type": "git",
         "url": "https://github.com/mine2chow/JSON-Helper.git"
     },
     "engines": {
-        "vscode": "^1.22.1"
+        "vscode": "^1.22.0"
     },
     "categories": [
         "Other"
@@ -40,6 +40,10 @@
             {
                 "command": "jsonHelper.showNodesInQuickPick",
                 "title": "Show nodes in quick pick"
+            },
+            {
+                "command": "jsonHelper.jsonOutline",
+                "title": "jsonHelper: Show JSON outline"
             }
         ],
         "menus": {
@@ -63,6 +67,10 @@
                 {
                     "command": "jsonHelper.showNodesInQuickPick",
                     "when": "false"
+                },
+                {
+                    "command": "jsonHelper.jsonOutline",
+                    "when": "resourceLangId == json"
                 }
             ]
         },
@@ -77,8 +85,8 @@
                 },
                 "jsonHelper.quickpick.maxlayer": {
                     "type": "number",
-                    "default": 2,
-                    "description": "Max layer for revealing keys in quick pick box",
+                    "default": 99,
+                    "description": "Max layer for revealing keys in quick pick",
                     "scope": "window"
                 }
             }

@@ -136,7 +136,7 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
     private generateMsg(nodeMsgList:string[], plainPathList:string[] = [], path:json.Segment[]) : string{
         //let msg:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
         let plainMsg:string = "";
-        let quickPickMsg:string = this.generateJsonQuickPickCommandStr('🔍', path);
+        let quickPickMsg:string = this.generateJsonQuickPickCommandStr('▤', path);
         if(plainPathList.length != 0){
             plainMsg = this.generateCopyToClipboardCommandStr('✎', plainPathList.reverse().join(""));
             //plainMsg = this.generateCopyToClipboardCommandPic(msg + plainPathList.reverse().join(""));
@@ -187,7 +187,7 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
      */
     private generateJsonQuickPickCommandStr(name:string, path:json.Segment[]) {
         let args = {path: path};
-        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show brother and child nodes');
+        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show outline of current key/object');
     }
 
 }

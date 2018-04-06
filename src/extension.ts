@@ -53,6 +53,13 @@ export function activate(context: ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
+	// Register show json outline command
+	disposable = commands.registerCommand(cCmd.SHOW_JSON_OUTLINE, (args = {}) => {
+		jsonQuickPicker.showChildBrotherNode([], 99999);
+	});
+
+	context.subscriptions.push(disposable);
+
 	//Navigator
 	const moveToPreKey = new MoveToPreKey(jsonCommonInfo);
 	const moveToNextKey = new MoveToNextKey(jsonCommonInfo);
