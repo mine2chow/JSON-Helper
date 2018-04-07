@@ -10,7 +10,7 @@
         "url": "https://github.com/mine2chow/JSON-Helper.git"
     },
     "engines": {
-        "vscode": "^1.20.0"
+        "vscode": "^1.22.1"
     },
     "categories": [
         "Other"
@@ -36,6 +36,10 @@
             {
                 "command": "jsonHelper.moveToNextKey",
                 "title": "Navigate to the next key of current layer"
+            },
+            {
+                "command": "jsonHelper.showNodesInQuickPick",
+                "title": "Show nodes in quick pick"
             }
         ],
         "menus": {
@@ -55,6 +59,10 @@
                 {
                     "command": "jsonHelper.moveToNextKey",
                     "when": "false"
+                },
+                {
+                    "command": "jsonHelper.showNodesInQuickPick",
+                    "when": "false"
                 }
             ]
         },
@@ -65,6 +73,12 @@
                     "type": "string",
                     "default": "jsonObj",
                     "description": "JSON object name for showing",
+                    "scope": "window"
+                },
+                "jsonHelper.quickpick.maxlayer": {
+                    "type": "number",
+                    "default": 2,
+                    "description": "Max layer for revealing keys in quick pick box",
                     "scope": "window"
                 }
             }

@@ -6,7 +6,7 @@ import { MarkDownCmd } from './utils/MarkDownCmd';
 import { isNumber } from 'util';
 import { LinkToDocCommandArgs } from './commands/DocLink';
 import { JsonCommonInfo } from './JsonCommonInfo';
-import { DOCLINK_COMMAND, COPYTOCLIPBOARD_COMMAND } from './commands/CommandCommonInfo';
+import { DOCLINK_COMMAND, COPYTOCLIPBOARD_COMMAND, SHOW_NODES_QUICK_PICK_CMD } from './commands/CommandCommonInfo';
 
 
 export class JsonHelperHoverProvider implements vscode.HoverProvider{
@@ -29,11 +29,19 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
         let path = currentLocation.path.slice(0);
 
         if(!currentLocation.previousNode){
-            // not on a node
-            return null;
+            let node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
+
+            if(path.length == 0 || (isNumber(path[path.length-1]) && node.offset == offset)){
+                // Head of an array item or root
+                // Reset previous node info
+                currentLocation.previousNode = node;
+            } else {
+                // not on a node
+                return null;
+            }
         }
 
-        if(!currentLocation.isAtPropertyKey && !isNumber(path[path.length - 1])){
+        if(path.length != 0 && (!currentLocation.isAtPropertyKey && !isNumber(path[path.length - 1]))){
             // value except list item
             return null;
         }
@@ -61,9 +69,9 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
 
 
     private generateMsgByPath(path : json.Segment[], document : vscode.TextDocument) : string {
-        if(path.length == 0){
-            return null;
-        }
+            
+
+        let pathCopy:json.Segment[] = JSON.parse(JSON.stringify(path));
 
         let node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
         
@@ -71,24 +79,29 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
         let plainPathList = [];
         let currentKey;
 
-        while((currentKey = path.pop()) != null){
-            if(isNumber(currentKey)){
-                nodeMsgList.push(`[\`${currentKey}\`]`);
-                plainPathList.push(`[${currentKey}]`);
-            } else {
-                if(node.parent.type === 'property'){
-                    let keyNode = node.parent.children[0];
-                    //in order to get the origin text, in case of escape character
-                    let keyOrignText = this.jsonCommonInfo.getJsonText().substr(keyNode.offset, keyNode.length);
+        if(path.length != 0){
+
+            while((currentKey = path.pop()) != null){
+                if(isNumber(currentKey)){
+                    //nodeMsgList.push(`[\`${currentKey}\`]`);
                     let keyHint = this.getKeyHint(node);
-                    nodeMsgList.push(`[${this.generateDocLinkCommandStr(keyOrignText, document.positionAt(keyNode.offset), document.positionAt(keyNode.offset + keyNode.length), keyHint)}]`);
-                    plainPathList.push(`[${keyOrignText}]`);
+                    nodeMsgList.push(`[${this.generateDocLinkCommandStr(`${currentKey}`, document.positionAt(node.offset), document.positionAt(node.offset), keyHint)}]`);
+                    plainPathList.push(`[${currentKey}]`);
                 } else {
-                    nodeMsgList.push(`[\`Error\`]`);
-                    plainPathList.push(`[\`Error\`]`);
+                    if(node.parent.type === 'property'){
+                        let keyNode = node.parent.children[0];
+                        //in order to get the origin text, in case of escape character
+                        let keyOrignText = this.jsonCommonInfo.getJsonText().substr(keyNode.offset, keyNode.length);
+                        let keyHint = this.getKeyHint(node);
+                        nodeMsgList.push(`[${this.generateDocLinkCommandStr(keyOrignText, document.positionAt(keyNode.offset), document.positionAt(keyNode.offset + keyNode.length), keyHint)}]`);
+                        plainPathList.push(`[${keyOrignText}]`);
+                    } else {
+                        nodeMsgList.push(`[\`Error\`]`);
+                        plainPathList.push(`[\`Error\`]`);
+                    }
                 }
+                node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
             }
-            node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
         }
 
         //root node
@@ -98,7 +111,7 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
             document.positionAt(node.offset), document.positionAt(node.offset), this.getKeyHint(node))}`);
         plainPathList.push(`${keyRootName}`);
 
-        return this.generateMsg(nodeMsgList, plainPathList);
+        return this.generateMsg(nodeMsgList, plainPathList, pathCopy);
     }
 
     /**
@@ -120,15 +133,16 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
      * @param nodeMsgList node message list
      * @param plainPathList node plain message list
      */
-    private generateMsg(nodeMsgList:string[], plainPathList:string[] = []) : string{
+    private generateMsg(nodeMsgList:string[], plainPathList:string[] = [], path:json.Segment[]) : string{
         //let msg:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
         let plainMsg:string = "";
+        let quickPickMsg:string = this.generateJsonQuickPickCommandStr('🔍', path);
         if(plainPathList.length != 0){
             plainMsg = this.generateCopyToClipboardCommandStr('✎', plainPathList.reverse().join(""));
             //plainMsg = this.generateCopyToClipboardCommandPic(msg + plainPathList.reverse().join(""));
         }
 
-        return nodeMsgList.reverse().join('') + "&nbsp;&nbsp;" + plainMsg;
+        return quickPickMsg + "&nbsp;" + plainMsg + "  \n" + nodeMsgList.reverse().join('');
     }
 
 
@@ -164,6 +178,16 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
     private generateCopyToClipboardCommandStr(name:string, text:string) {
         let args = {text: `${text}`};
         return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, COPYTOCLIPBOARD_COMMAND, args, 'Copy path to clipboard');
+    }
+
+    /**
+     * generateJsonQuickPickCommandStr
+     * @param name Name
+     * @param path Path for current node
+     */
+    private generateJsonQuickPickCommandStr(name:string, path:json.Segment[]) {
+        let args = {path: path};
+        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show brother and child nodes');
     }
 
 }

@@ -11,6 +11,7 @@ import { JsonCommonInfo } from './JsonCommonInfo';
 import { StatusBarController } from './StatusBarController';
 import * as cCmd from './commands/CommandCommonInfo';
 import { MoveToPreKey, MoveToNextKey } from './commands/Navigator';
+import { JsonQuickPicker } from './commands/JsonQuickPicker';
 
 let statusIconMovePreKey:StatusBarItem, statusIconMoveNextKey:StatusBarItem;
 
@@ -40,6 +41,18 @@ export function activate(context: ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
+	// Register showNodesInQuickPick command
+	const jsonQuickPicker = new JsonQuickPicker(jsonCommonInfo);
+
+	disposable = commands.registerCommand(cCmd.SHOW_NODES_QUICK_PICK_CMD, (args = {}) => {
+		if(!args.path){
+			return;
+		}
+		jsonQuickPicker.showChildBrotherNode(args.path);
+	});
+
+	context.subscriptions.push(disposable);
+
 	//Navigator
 	const moveToPreKey = new MoveToPreKey(jsonCommonInfo);
 	const moveToNextKey = new MoveToNextKey(jsonCommonInfo);
@@ -57,21 +70,6 @@ export function activate(context: ExtensionContext) {
 	statusIconMovePreKey = window.createStatusBarItem(StatusBarAlignment.Left, 11);
 	statusIconMoveNextKey = window.createStatusBarItem(StatusBarAlignment.Left, 10);
 	new StatusBarController(jsonCommonInfo, statusIconMovePreKey, statusIconMoveNextKey);
-
-	// const jsonSidebarProvider = new JsonSidebarProvider(jsonCommonInfo, context);
-
-	// context.subscriptions.push(
-	// 	window.registerTreeDataProvider('jsonHelperSidebar', jsonSidebarProvider)
-	// );
-	// context.subscriptions.push(
-	// 	commands.registerCommand('jsonHelperSidebar.refresh', () => jsonSidebarProvider.refresh())
-	// );
-	// context.subscriptions.push(
-	// 	commands.registerCommand('jsonHelperSidebar.refreshNode', offset => jsonSidebarProvider.refresh(offset))
-	// );
-	// context.subscriptions.push(
-	// 	commands.registerCommand('jsonHelperSidebar.renameNode', offset => jsonSidebarProvider.rename(offset))
-	// );
 }
 
 function deactivate() {
