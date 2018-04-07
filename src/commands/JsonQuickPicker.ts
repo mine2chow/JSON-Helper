@@ -147,6 +147,7 @@ export class JsonQuickPicker {
         }
 
         let node = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
+        let pathLayer = path.length;
         let currentKey = path.pop();
         let nodeParent = json.findNodeAtLocation(this.jsonCommonInfo.getJsonTree(), path);
 
@@ -171,12 +172,28 @@ export class JsonQuickPicker {
         }
         
         let placeHolderStr = "";
-        if(path.length == 0) {
+        if(pathLayer == 0) {
             placeHolderStr = `Outline of JSON file, input something to search`;
         } else if(currentKey && !isNumber(currentKey)) {
             placeHolderStr = `Outline of key [${currentKey}], input something to search`;
         } else if(isNumber(currentKey)) {
-            placeHolderStr = `Outline of ${path[path.length - 1]}[${currentKey}], input something to search`;
+            let previousKeyName = "";
+            if(pathLayer > 1){
+                for(var i= path.length-1; i>=0; i--){
+                    if(!isNumber(path[i])){
+                        previousKeyName = `${path[i]}${previousKeyName}`;
+                        break;
+                    } else {
+                        previousKeyName = `[${path[i]}]${previousKeyName}`;
+                    }
+                }
+                if(i == -1){
+                    previousKeyName = workspace.getConfiguration().get('jsonHelper.object.name') + previousKeyName;
+                }
+            } else {
+                previousKeyName = workspace.getConfiguration().get('jsonHelper.object.name');
+            }
+            placeHolderStr = `Outline of ${previousKeyName}[${currentKey}], input something to search`;
         } else {
             placeHolderStr = `Input something to search`;
         }

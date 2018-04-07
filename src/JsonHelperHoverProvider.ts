@@ -187,7 +187,7 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
      */
     private generateJsonQuickPickCommandStr(name:string, path:json.Segment[]) {
         let args = {path: path};
-        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show outline of current key/object');
+        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show outline of the current key/object');
     }
 
 }
