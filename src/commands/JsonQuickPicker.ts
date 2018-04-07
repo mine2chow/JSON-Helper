@@ -26,9 +26,13 @@ export class JsonQuickPicker {
      * @param length Length
      */
     private getJsonSubstrPlain(start:number, length:number) {
-        let sub1 = this.jsonCommonInfo.getJsonText().substr(start);
-        sub1 = sub1.replace(/[\r\n\t ]/g, "");
-        return sub1.substr(0, length);
+        let sub1 = this.jsonCommonInfo.getJsonText().substr(start, length);
+        let sub2 = sub1.replace(/[\r\n\t ]/g, "");
+        if(sub2.length <= MAX_LENGTH_CODE_LINE) {
+            return sub2;
+        } else {
+            return sub2.substr(0, MAX_LENGTH_CODE_LINE) + " ...";
+        }
     }
 
     /**
@@ -51,11 +55,7 @@ export class JsonQuickPicker {
 
             // Detail
             let detailLocal = "";
-            if(MAX_LENGTH_CODE_LINE < nodeItem.length) {
-                detailLocal = this.getJsonSubstrPlain(nodeItem.offset, MAX_LENGTH_CODE_LINE) + " ...";
-            } else {
-                detailLocal = this.getJsonSubstrPlain(nodeItem.offset, nodeItem.length);
-            }
+            detailLocal = this.getJsonSubstrPlain(nodeItem.offset, nodeItem.length);
 
             item = {
                 label: indentStr + `${index}`,
