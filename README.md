@@ -2,14 +2,13 @@
 
 [![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/zhoufeng.json-helper.svg)](https://marketplace.visualstudio.com/items?itemName=zhoufeng.json-helper) [![Extension Installs](https://vsmarketplacebadge.apphb.com/installs/zhoufeng.json-helper.svg)](https://marketplace.visualstudio.com/items?itemName=zhoufeng.json-helper) [![Extension Rating](https://vsmarketplacebadge.apphb.com/rating/zhoufeng.json-helper.svg)](https://marketplace.visualstudio.com/items?itemName=zhoufeng.json-helper)
 
-## New features in v1.3:
+## New features in v1.3
 
 |||
 |:---:|:---|
 |Outline for file|"`jsonHelper: Show JSON outline`" command will show the outline of the whole JSON file|
 |Outline for current key|"`▤`" button on hover window will show the outline of the current layer and children of the current key, configure propery "`jsonHelper.quickpick.maxlayer`" to limit the max layer depth for children in outline, default "`99`" |
-
------------
+|||
 
 ## Description
 

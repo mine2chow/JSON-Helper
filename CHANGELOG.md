@@ -1,5 +1,8 @@
 # CHANGELOG
 
+* 1.3.1 - Bug fix
+  * Quick pick may show wrong placeholder
+  * Quick pick item detail content for array may get longer than what it is
 * 1.3.0
   * Quick pick view for brother and child nodes
   * Able to navigate to an array item from hover window

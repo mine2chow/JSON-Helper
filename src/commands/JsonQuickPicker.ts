@@ -200,7 +200,9 @@ export class JsonQuickPicker {
         window.showQuickPick(pickerItems, {
             placeHolder: placeHolderStr
         }).then((selected: JsonQuickPickItem) => {
-            this.moveToNode(this.jsonCommonInfo.getEditor(), selected.jsonNode);
+            if(selected){
+                this.moveToNode(this.jsonCommonInfo.getEditor(), selected.jsonNode);
+            }
         });
     }
 }
