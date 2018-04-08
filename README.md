@@ -7,8 +7,7 @@
 |||
 |:---:|:---|
 |Outline for file|"`jsonHelper: Show JSON outline`" command will show the outline of the whole JSON file|
-|Outline for current key|"`▤`" button on hover window will show the outline of the current layer and children of the current key, configure propery "`jsonHelper.quickpick.maxlayer`" to limit the max layer depth for children in outline, default "`99`" |
-|||
+|Outline for current key|"`▤`" button on hover window will show the outline of the current layer and children of the current key, configure propery "`jsonHelper.quickpick.maxlayer`" to limit the max layer depth for children in outline, default "`99`"|
 
 ## Description
 
