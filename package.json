@@ -70,7 +70,7 @@
                 },
                 {
                     "command": "jsonHelper.jsonOutline",
-                    "when": "resourceLangId == json"
+                    "when": "editorLangId == json"
                 }
             ]
         },
