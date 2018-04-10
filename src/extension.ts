@@ -48,7 +48,11 @@ export function activate(context: ExtensionContext) {
 		if(!args.path){
 			return;
 		}
-		jsonQuickPicker.showChildBrotherNode(args.path);
+		if(args.maxLayer){
+			jsonQuickPicker.showChildBrotherNode(args.path, args.maxLayer);
+		} else {
+			jsonQuickPicker.showChildBrotherNode(args.path);
+		}
 	});
 
 	context.subscriptions.push(disposable);

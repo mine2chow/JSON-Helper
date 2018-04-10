@@ -137,12 +137,13 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
         //let msg:string = vscode.workspace.getConfiguration().get('jsonHelper.object.name');
         let plainMsg:string = "";
         let quickPickMsg:string = this.generateJsonQuickPickCommandStr('▤', path);
+        let currentLayerPickMsg:string = this.generateJsonQuickPickCommandStr('▣', path, 1);
         if(plainPathList.length != 0){
             plainMsg = this.generateCopyToClipboardCommandStr('✎', plainPathList.reverse().join(""));
             //plainMsg = this.generateCopyToClipboardCommandPic(msg + plainPathList.reverse().join(""));
         }
 
-        return quickPickMsg + "&nbsp;" + plainMsg + "  \n" + nodeMsgList.reverse().join('');
+        return quickPickMsg + "&nbsp;" + currentLayerPickMsg + "&nbsp;" + plainMsg + "  \n" + nodeMsgList.reverse().join('');
     }
 
 
@@ -185,9 +186,16 @@ export class JsonHelperHoverProvider implements vscode.HoverProvider{
      * @param name Name
      * @param path Path for current node
      */
-    private generateJsonQuickPickCommandStr(name:string, path:json.Segment[]) {
-        let args = {path: path};
-        return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show outline of the current key/object');
+    private generateJsonQuickPickCommandStr(name:string, path:json.Segment[], maxLayer:number = null) {
+        let args = {
+            path: path,
+            maxLayer: maxLayer
+        };
+        if(maxLayer == 1){
+            return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show current layer');
+        } else {
+            return MarkDownCmd.generateMarkedCommandStr(`\`${name}\``, SHOW_NODES_QUICK_PICK_CMD, args, 'Show outline of the current key/object');
+        }
     }
 
 }
