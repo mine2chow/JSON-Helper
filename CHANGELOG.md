@@ -1,5 +1,8 @@
 # CHANGELOG
 
+* 1.3.2
+  * Able to use command in untitled file of json
+  * Add button for showing current layer
 * 1.3.1 - Bug fix
   * Quick pick may show wrong placeholder
   * Quick pick item detail content for array may get longer than what it is
