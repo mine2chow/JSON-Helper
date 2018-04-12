@@ -175,7 +175,11 @@ export class JsonQuickPicker {
         if(pathLayer == 0) {
             placeHolderStr = `Outline of JSON file, input something to search`;
         } else if(currentKey && !isNumber(currentKey)) {
-            placeHolderStr = `Outline of key [${currentKey}], input something to search`;
+            if(ttl == 1){
+                placeHolderStr = `Show layer of key [${currentKey}], input something to search`;
+            } else {
+                placeHolderStr = `Outline of key [${currentKey}], input something to search`;
+            }
         } else if(isNumber(currentKey)) {
             let previousKeyName = "";
             if(pathLayer > 1){
@@ -193,7 +197,11 @@ export class JsonQuickPicker {
             } else {
                 previousKeyName = workspace.getConfiguration().get('jsonHelper.object.name');
             }
-            placeHolderStr = `Outline of ${previousKeyName}[${currentKey}], input something to search`;
+            if(ttl == 1){
+                placeHolderStr = `Show layer of ${previousKeyName}[${currentKey}], input something to search`;
+            } else {
+                placeHolderStr = `Outline of ${previousKeyName}[${currentKey}], input something to search`;
+            }
         } else {
             placeHolderStr = `Input something to search`;
         }
